@@ -1,9 +1,6 @@
-# Audio to Geolocation
+# Crime Locator
 
-Provides geolocation from radio scanner using AI inference
-
-The idea is this code is loaded containerized and loaded onto a rpi zero which is connected to a radio scanner.
-The program then listends and uses location to alert you if there is a crime in your area.
+This app provides GPS locations for local police activity. It uses a Raspberry Pi Zero and a hand held ham radio.
 
 ### Python virtual environment
 

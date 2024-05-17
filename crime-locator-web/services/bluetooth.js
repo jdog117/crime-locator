@@ -1,17 +1,13 @@
-// web to mcu bluetooth service
-
-const uuid = "ESP32Audio";
+// services/bluetooth.js
 export async function connectToBluetooth() {
     try {
         const device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ["your_service_uuid"] }],
+            filters: [{ services: ["181a"] }], // Custom service UUID
         });
 
         const server = await device.gatt.connect();
-        const service = await server.getPrimaryService("your_service_uuid");
-        const characteristic = await service.getCharacteristic(
-            "your_characteristic_uuid"
-        );
+        const service = await server.getPrimaryService("181a"); // Custom service UUID
+        const characteristic = await service.getCharacteristic("2a58"); // Custom characteristic UUID
 
         characteristic.startNotifications();
         characteristic.addEventListener(

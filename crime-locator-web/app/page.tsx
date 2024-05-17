@@ -1,4 +1,5 @@
-// pages/index.js
+"use client";
+
 import { useEffect } from "react";
 import { connectToBluetooth } from "../services/bluetooth";
 import { playAudio } from "../services/audio";

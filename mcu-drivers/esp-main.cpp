@@ -10,25 +10,22 @@
 
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
-const int readInterval = 50; // Interval to read and send audio signal
+const int readInterval = 50; // interval to read and send audio signal
 
 void setup() {
   pinMode(MY_BLUE_LED_PIN, OUTPUT);
   adc1_config_width(ADC_WIDTH_BIT_12);
   adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
 
-  // Initialize Serial communication
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   // Initialize BLE
   BLEDevice::init("ESP32Audio");
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
-  // Create BLE Service
   BLEService *pService = pServer->createService(BLEUUID((uint16_t)0x181A)); // Custom service UUID
 
-  // Create BLE Characteristic
   pCharacteristic = pService->createCharacteristic(
                       BLEUUID((uint16_t)0x2A58), // Custom characteristic UUID
                       BLECharacteristic::PROPERTY_READ |
@@ -38,28 +35,27 @@ void setup() {
 
   pCharacteristic->addDescriptor(new BLE2902());
 
-  // Start the service
   pService->start();
 
-  // Start advertising
+  // start advertising
   pServer->getAdvertising()->start();
 }
 
 void loop() {
   if (deviceConnected) {
-    // Read audio signal
+    // read audio signal
     int audioSignal = adc1_get_raw(ADC1_CHANNEL_6);
 
-    // Convert audio signal to byte array
+    // convert audio to byte array
     uint8_t audioData[2];
     audioData[0] = audioSignal & 0xFF;
     audioData[1] = (audioSignal >> 8) & 0xFF;
 
-    // Send audio signal over BLE
+    // send audio over BLE
     pCharacteristic->setValue(audioData, 2);
     pCharacteristic->notify();
 
-    // Blink LED to indicate activity
+    // audio activity LED
     digitalWrite(MY_BLUE_LED_PIN, HIGH);
     delay(readInterval);
     digitalWrite(MY_BLUE_LED_PIN, LOW);

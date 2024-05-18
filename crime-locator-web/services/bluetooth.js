@@ -1,12 +1,14 @@
+import { playAudio } from "./audio";
+
 export async function connectToBluetooth() {
     try {
         const device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ["181a"] }], // Custom service UUID
+            filters: [{ services: ["181a"] }], // custom service UUID
         });
 
         const server = await device.gatt.connect();
-        const service = await server.getPrimaryService("181a"); // Custom service UUID
-        const characteristic = await service.getCharacteristic("2a58"); // Custom characteristic UUID
+        const service = await server.getPrimaryService("181a"); // custom service UUID
+        const characteristic = await service.getCharacteristic("2a58"); // custom characteristic UUID
 
         characteristic.startNotifications();
         characteristic.addEventListener(
@@ -20,8 +22,10 @@ export async function connectToBluetooth() {
     }
 }
 
-function handleCharacteristicValueChanged(event) {
+async function handleCharacteristicValueChanged(event) {
     const value = event.target.value;
-    // Process the audio signal here
-    console.log("Received audio signal:", value);
+    // convert the value to an ArrayBuffer
+    const audioData = new Uint8Array(value.buffer);
+    // play the audio
+    await playAudio(audioData);
 }

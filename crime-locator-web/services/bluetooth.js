@@ -1,4 +1,3 @@
-// services/bluetooth.js
 export async function connectToBluetooth() {
     try {
         const device = await navigator.bluetooth.requestDevice({

@@ -12,6 +12,18 @@ BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
 const int readInterval = 50; // interval to read and send audio signal
 
+class MyServerCallbacks: public BLEServerCallbacks {
+  void onConnect(BLEServer* pServer) {
+    deviceConnected = true;
+    Serial.println("Device connected");
+  };
+
+  void onDisconnect(BLEServer* pServer) {
+    deviceConnected = false;
+    Serial.println("Device disconnected");
+  }
+};
+
 void setup() {
   pinMode(MY_BLUE_LED_PIN, OUTPUT);
   adc1_config_width(ADC_WIDTH_BIT_12);
@@ -37,6 +49,8 @@ void setup() {
 
   pService->start();
 
+  delay(500); // fro debug purposes, allows server to start before advertising
+
   // start advertising
   pServer->getAdvertising()->start();
 }
@@ -60,15 +74,6 @@ void loop() {
     delay(readInterval);
     digitalWrite(MY_BLUE_LED_PIN, LOW);
     delay(readInterval);
+    Serial.println("connected loop");
   }
 }
-
-class MyServerCallbacks: public BLEServerCallbacks {
-  void onConnect(BLEServer* pServer) {
-    deviceConnected = true;
-  };
-
-  void onDisconnect(BLEServer* pServer) {
-    deviceConnected = false;
-  }
-};

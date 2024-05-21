@@ -18,7 +18,7 @@ export async function connectToBluetooth() {
 
         return characteristic;
     } catch (error) {
-        console.error("Bluetooth connection failed", error);
+        throw new Error("Bluetooth connection failed: " + error.message);
     }
 }
 

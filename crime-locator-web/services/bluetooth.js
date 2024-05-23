@@ -1,25 +1,37 @@
-import { playAudio } from "./audio";
+import { playAudio } from "@/services/audio";
 
 export async function connectToBluetooth() {
+    let device, server, service, characteristic;
+
     try {
-        const device = await navigator.bluetooth.requestDevice({
+        device = await navigator.bluetooth.requestDevice({
             filters: [{ services: ["181a"] }], // custom service UUID
         });
 
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService("181a"); // custom service UUID
-        const characteristic = await service.getCharacteristic("2a58"); // custom characteristic UUID
+        server = await device.gatt.connect();
+        service = await server.getPrimaryService("181a"); // custom service UUID
+        characteristic = await service.getCharacteristic("2a58"); // custom characteristic UUID
+    } catch (error) {
+        return {
+            characteristic: null,
+            message: "Bluetooth connection failed: " + error.message,
+        };
+    }
 
-        characteristic.startNotifications();
+    try {
+        await characteristic.startNotifications();
         characteristic.addEventListener(
             "characteristicvaluechanged",
             handleCharacteristicValueChanged
         );
-
-        return characteristic;
     } catch (error) {
-        throw new Error("Bluetooth connection failed: " + error.message);
+        return {
+            characteristic: null,
+            message: "Failed to start notifications: " + error.message,
+        };
     }
+
+    return { characteristic, message: "Bluetooth connected successfully" };
 }
 
 async function handleCharacteristicValueChanged(event) {

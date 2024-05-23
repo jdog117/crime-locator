@@ -46,8 +46,11 @@ export default function Home() {
     return (
         <div>
             <h1>Crime Locator Web App</h1>
-            <p>Connecting to ESP32 via Bluetooth...</p>
-            {isReceivingAudio && <p>Receiving audio...</p>}
+            <p>
+                {isReceivingAudio
+                    ? "Receiving audio..."
+                    : "Connecting to ESP32 via Bluetooth..."}
+            </p>
             {error && <p>Error: {error}</p>}
         </div>
     );

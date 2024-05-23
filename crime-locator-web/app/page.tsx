@@ -12,9 +12,10 @@ export default function Home() {
         async function initBluetooth() {
             while (true) {
                 try {
-                    const characteristic = await connectToBluetooth();
+                    const { characteristic, message } =
+                        await connectToBluetooth();
                     if (!characteristic) {
-                        setError("Characteristic is undefined");
+                        setError(message);
                         continue; // If characteristic is undefined, try again
                     }
                     characteristic.addEventListener(
@@ -27,16 +28,10 @@ export default function Home() {
                     );
                     break; // If connection is successful, break the loop
                 } catch (error) {
-                    if (error instanceof Error) {
-                        setError(
-                            "Failed to initialize Bluetooth: " + error.message
-                        );
-                    } else {
-                        setError(
-                            "Failed to initialize Bluetooth: An unknown error occurred"
-                        );
-                    }
-                    // If there's an error, the loop will continue and try again
+                    setError(
+                        "Failed to initialize Bluetooth: " +
+                            (error as Error).message
+                    );
                 }
             }
         }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { connectToBluetooth } from "../services/bluetooth";
-import { playAudio } from "../services/audio";
+import { connectToBluetooth } from "@/services/bluetooth";
+import { playAudio } from "@/services/audio";
 
 export default function Home() {
     const [isReceivingAudio, setIsReceivingAudio] = useState(false);
@@ -32,6 +32,8 @@ export default function Home() {
                         "Failed to initialize Bluetooth: " +
                             (error as Error).message
                     );
+                    // wait 2 seconds before trying again
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
                 }
             }
         }
@@ -40,7 +42,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1>Crime Locator Web App</h1>
+            <h1 className="m-20 text-xl">Crime Locator Web App</h1>
             <p className="m-20 text-xl">
                 {isReceivingAudio
                     ? "Receiving audio!"

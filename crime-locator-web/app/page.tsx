@@ -10,35 +10,53 @@ export default function Home() {
 
     useEffect(() => {
         async function initBluetooth() {
-            while (true) {
-                try {
-                    const { characteristic, message } =
-                        await connectToBluetooth();
-                    if (!characteristic) {
-                        setError(message);
-                        continue; // If characteristic is undefined, try again
-                    }
-                    characteristic.addEventListener(
-                        "characteristicvaluechanged",
-                        (event: any) => {
-                            const audioBuffer = event.target.value;
-                            playAudio(audioBuffer);
-                            setIsReceivingAudio(true);
-                        }
-                    );
-                    break; // If connection is successful, break the loop
-                } catch (error) {
-                    setError(
-                        "Failed to initialize Bluetooth: " +
-                            (error as Error).message
-                    );
-                    // wait 2 seconds before trying again
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
+            try {
+                const { characteristic, message } = await connectToBluetooth();
+                if (!characteristic) {
+                    setError(message);
+                    return; // If characteristic is undefined, stop
                 }
+                characteristic.addEventListener(
+                    "characteristicvaluechanged",
+                    (event: any) => {
+                        const audioBuffer = event.target.value;
+                        playAudio(audioBuffer);
+                        setIsReceivingAudio(true);
+                    }
+                );
+            } catch (error) {
+                setError(
+                    "Failed to initialize Bluetooth: " +
+                        (error as Error).message
+                );
             }
         }
         initBluetooth();
     }, []);
+
+    const handleReconnectClick = async () => {
+        setIsReceivingAudio(false);
+        setError(null);
+        try {
+            const { characteristic, message } = await connectToBluetooth();
+            if (!characteristic) {
+                setError(message);
+                return; // If characteristic is undefined, stop
+            }
+            characteristic.addEventListener(
+                "characteristicvaluechanged",
+                (event: any) => {
+                    const audioBuffer = event.target.value;
+                    playAudio(audioBuffer);
+                    setIsReceivingAudio(true);
+                }
+            );
+        } catch (error) {
+            setError(
+                "Failed to initialize Bluetooth: " + (error as Error).message
+            );
+        }
+    };
 
     return (
         <div>
@@ -51,6 +69,9 @@ export default function Home() {
             {error && (
                 <p className="m-20 text-lg text-red-600">Error: {error}</p>
             )}
+            <button onClick={handleReconnectClick} className="m-20">
+                Reconnect
+            </button>
         </div>
     );
 }

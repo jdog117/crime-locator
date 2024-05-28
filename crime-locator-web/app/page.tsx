@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { connectToBluetooth } from "@/services/bluetooth";
 import { playAudio } from "@/services/audio";
 import { Button } from "@/components/ui/button";
+// import { ModeToggle } from "@/components/ui/themeToggle";
 
 export default function Home() {
     const [isReceivingAudio, setIsReceivingAudio] = useState(false);
@@ -43,18 +44,22 @@ export default function Home() {
 
     return (
         <div className="m-20">
-            <h1 className="my-20 text-2xl font-bold">Crime Locator Web App</h1>
-            <p className="mt-20 text-xl">
-                {isReceivingAudio
-                    ? "Receiving audio!"
-                    : "Connecting to ESP32 via Bluetooth..."}
-            </p>
-            {error && (
-                <p className="my-5 text-lg text-red-600">Error: {error}</p>
-            )}
-            <Button onClick={handleReconnectClick} className="my-5">
-                Reconnect
-            </Button>
+            <div>
+                <h1 className="my-20 text-2xl font-bold">
+                    Crime Locator Web App
+                </h1>
+                <p className="mt-20 text-xl">
+                    {isReceivingAudio
+                        ? "Receiving audio!"
+                        : "Connecting to ESP32 via Bluetooth..."}
+                </p>
+                {error && (
+                    <p className="my-5 text-lg text-red-600">Error: {error}</p>
+                )}
+                <Button onClick={handleReconnectClick} className="my-5">
+                    Reconnect
+                </Button>
+            </div>
         </div>
     );
 }

@@ -38,6 +38,6 @@ async function handleCharacteristicValueChanged(event) {
     const value = event.target.value;
     // convert the value to an ArrayBuffer
     const audioData = new Uint8Array(value.buffer);
-    // play the audio
+    // sends to page.tsx through playAudio
     await playAudio(audioData);
 }

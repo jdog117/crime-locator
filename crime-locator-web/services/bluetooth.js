@@ -2,27 +2,62 @@ import { playAudio } from "@/services/audio";
 
 export async function connectToBluetooth() {
     let device, server, service, characteristic;
-
+    console.log("Connecting to Bluetooth...");
     try {
-        device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: ["181a"] }], // custom service UUID
+        device = await navigator.bluetooth
+            .requestDevice({
+                filters: [{ services: ["181a"] }], // custom service UUID
+            })
+            .catch((error) => {
+                return {
+                    characteristic: null,
+                    message: "Bluetooth connection failed: " + error.message,
+                };
+            });
+
+        server = await device.gatt.connect().catch((error) => {
+            return {
+                characteristic: null,
+                message: "Failed to connect to server: " + error.message,
+            };
         });
 
-        server = await device.gatt.connect();
-        service = await server.getPrimaryService("181a"); // custom service UUID
-        characteristic = await service.getCharacteristic("2a58"); // custom characteristic UUID
+        console.log("Server connected gatt: " + device.name);
+        service = await server.getPrimaryService("181a").catch((error) => {
+            return {
+                characteristic: null,
+                message: "Failed to get primary service: " + error.message,
+            };
+        });
+
+        characteristic = await service
+            .getCharacteristic("2a58")
+            .catch((error) => {
+                return {
+                    characteristic: null,
+                    message: "Failed to get characteristic: " + error.message,
+                };
+            });
     } catch (error) {
         return {
             characteristic: null,
-            message: "Bluetooth connection failed: " + error.message,
+            message: "Failed to initialize Bluetooth: " + error.message,
         };
     }
 
     try {
-        await characteristic.startNotifications();
+        await characteristic.startNotifications().catch((error) => {
+            return {
+                characteristic: null,
+                message: "Failed to start notifications: " + error.message,
+            };
+        });
         characteristic.addEventListener(
             "characteristicvaluechanged",
-            handleCharacteristicValueChanged
+            (event) => {
+                const audioBuffer = event.target.value;
+                playAudio(audioBuffer);
+            }
         );
     } catch (error) {
         return {

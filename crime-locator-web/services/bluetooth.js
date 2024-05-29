@@ -6,7 +6,8 @@ export async function connectToBluetooth() {
     try {
         device = await navigator.bluetooth
             .requestDevice({
-                filters: [{ services: ["0x181A"] }], // can try by name and other methods
+                filters: [{ name: ["ESP32Audio"] }], // can try by name and other methods
+                optionalServices: ["battery_service"],
             })
             .then(console.log("Device found!!!")) // FOR DEBUG
             .catch((error) => {

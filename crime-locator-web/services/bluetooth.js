@@ -6,9 +6,10 @@ export async function connectToBluetooth() {
     try {
         device = await navigator.bluetooth
             .requestDevice({
-                filters: [{ services: ["181a"] }], // custom service UUID
+                filters: [{ services: ["0x181A"] }], // can try by name and other methods
             })
             .catch((error) => {
+                console.log(error.message); // DEBUGGING
                 return {
                     characteristic: null,
                     message: "Bluetooth connection failed: " + error.message,
@@ -23,7 +24,7 @@ export async function connectToBluetooth() {
         });
 
         console.log("Server connected gatt: " + device.name);
-        service = await server.getPrimaryService("181a").catch((error) => {
+        service = await server.getPrimaryService("0x181A").catch((error) => {
             return {
                 characteristic: null,
                 message: "Failed to get primary service: " + error.message,
@@ -31,7 +32,7 @@ export async function connectToBluetooth() {
         });
 
         characteristic = await service
-            .getCharacteristic("2a58")
+            .getCharacteristic("0x2A58")
             .catch((error) => {
                 return {
                     characteristic: null,

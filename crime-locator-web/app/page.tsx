@@ -43,7 +43,7 @@ export default function Home() {
     };
 
     return (
-        <div className="m-20">
+        <div className="m-5 md:m-20">
             <div>
                 <h1 className="my-20 text-2xl font-bold">
                     Crime Locator Web App

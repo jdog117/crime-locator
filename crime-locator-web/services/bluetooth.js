@@ -4,12 +4,23 @@ export async function connectToBluetooth() {
     let device, server, service, characteristic;
     console.log("Connecting to Bluetooth..."); // FOR DEBUG
     try {
+        // Wait for a user gesture (e.g., a button click) before requesting device
+        await new Promise((resolve) => {
+            const button = document.createElement("button");
+            button.textContent = "Connect to Bluetooth";
+            button.addEventListener("click", () => {
+                resolve();
+                button.remove();
+            });
+            document.body.appendChild(button);
+        });
+
         device = await navigator.bluetooth
             .requestDevice({
                 filters: [{ name: ["ESP32Audio"] }], // can try by name and other methods
                 optionalServices: ["battery_service"],
             })
-            .then(console.log("Device found!!!")) // FOR DEBUG
+            .then(console.log("Device found!!! " + device.name)) // FOR DEBUG
             .catch((error) => {
                 console.log(error.message); // FOR DEBUG
                 return {

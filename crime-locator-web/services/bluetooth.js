@@ -8,20 +8,25 @@ export async function connectToBluetooth() {
             .requestDevice({
                 filters: [{ services: ["0x181A"] }], // can try by name and other methods
             })
+            .then(console.log("Device found!!!")) // FOR DEBUG
             .catch((error) => {
                 console.log(error.message); // FOR DEBUG
                 return {
                     characteristic: null,
-                    message: "Bluetooth connection failed: " + error.message,
+                    message:
+                        "Bluetooth connection failed step 1: " + error.message,
                 };
             });
 
-        server = await device.gatt.connect().catch((error) => {
-            return {
-                characteristic: null,
-                message: "Failed to connect to server: " + error.message,
-            };
-        });
+        server = await device.gatt
+            .connect()
+            .then(console.log("Server connected!")) // FOR DEBUG
+            .catch((error) => {
+                return {
+                    characteristic: null,
+                    message: "Failed to connect to server: " + error.message,
+                };
+            });
         console.log(
             // FOR DEBUG
             "Server connect! " +
@@ -40,6 +45,7 @@ export async function connectToBluetooth() {
 
         characteristic = await service
             .getCharacteristic("0x2A58")
+            .then(console.log("Characteristic found!")) // FOR DEBUG
             .catch((error) => {
                 return {
                     characteristic: null,

@@ -31,7 +31,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  // Initialize BLE
+  // nitialize BLE
   BLEDevice::init("ESP32Audio");
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -49,7 +49,7 @@ void setup() {
 
   pService->start();
 
-  delay(500); // fro debug purposes, allows server to start before advertising
+  delay(500); // FOR DEBUG, allows server to start before advertising
 
   // start advertising
   pServer->getAdvertising()->start();
@@ -69,11 +69,11 @@ void loop() {
     pCharacteristic->setValue(audioData, 2);
     pCharacteristic->notify();
 
-    // audio activity LED
+    // blink led audio indicator
     digitalWrite(MY_BLUE_LED_PIN, HIGH);
     delay(readInterval);
     digitalWrite(MY_BLUE_LED_PIN, LOW);
     delay(readInterval);
-    Serial.println("connected loop");
+    Serial.println("byte sent"); // FOR DEBUG
   }
 }

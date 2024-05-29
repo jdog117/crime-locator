@@ -2,14 +2,14 @@ import { playAudio } from "@/services/audio";
 
 export async function connectToBluetooth() {
     let device, server, service, characteristic;
-    console.log("Connecting to Bluetooth...");
+    console.log("Connecting to Bluetooth..."); // FOR DEBUG
     try {
         device = await navigator.bluetooth
             .requestDevice({
                 filters: [{ services: ["0x181A"] }], // can try by name and other methods
             })
             .catch((error) => {
-                console.log(error.message); // DEBUGGING
+                console.log(error.message); // FOR DEBUG
                 return {
                     characteristic: null,
                     message: "Bluetooth connection failed: " + error.message,
@@ -22,6 +22,13 @@ export async function connectToBluetooth() {
                 message: "Failed to connect to server: " + error.message,
             };
         });
+        console.log(
+            // FOR DEBUG
+            "Server connect! " +
+                server.connected +
+                ", device name: " +
+                device.name
+        );
 
         console.log("Server connected gatt: " + device.name);
         service = await server.getPrimaryService("0x181A").catch((error) => {

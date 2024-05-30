@@ -10,7 +10,7 @@
 
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
-const int readInterval = 50; // interval to read and send audio signal
+const int readInterval = 20; // interval to read and send audio signal
 
 class MyServerCallbacks: public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
@@ -70,10 +70,9 @@ void loop() {
     pCharacteristic->notify();
 
     // blink led audio indicator
-    digitalWrite(MY_BLUE_LED_PIN, HIGH);
+    digitalWrite(MY_BLUE_LED_PIN, !digitalRead(MY_BLUE_LED_PIN));
     delay(readInterval);
-    digitalWrite(MY_BLUE_LED_PIN, LOW);
-    delay(readInterval);
+    
     Serial.println("byte sent"); // FOR DEBUG
   }
 }

@@ -3,24 +3,18 @@ import { playAudio } from "@/services/audio";
 export async function connectToBluetooth() {
     let device, server, service, characteristic;
     console.log("Connecting to Bluetooth..."); // FOR DEBUG
-    try {
-        // Wait for a user gesture (e.g., a button click) before requesting device
-        await new Promise((resolve) => {
-            const button = document.createElement("button");
-            button.textContent = "Connect to Bluetooth";
-            button.addEventListener("click", () => {
-                resolve();
-                button.remove();
-            });
-            document.body.appendChild(button);
-        });
 
+    try {
+        // Directly request the Bluetooth device without waiting for a user gesture
         device = await navigator.bluetooth
             .requestDevice({
-                filters: [{ name: ["ESP32Audio"] }],
-                optionalServices: ["battery_service"], // checkabout optional services
+                filters: [{ name: ["ESP32Audio"] }], // keep this filter
+                optionalServices: ["0000181a-0000-1000-8000-00805f9b34fb"], // this needs to be the name of the service on the mcu
             })
-            .then(console.log("Device found!!! " + device.name)) // FOR DEBUG
+            .then((device) => {
+                console.log("Device found!!! " + device.name); // FOR DEBUG
+                return device;
+            })
             .catch((error) => {
                 console.log(error.message); // FOR DEBUG
                 return {
@@ -30,54 +24,53 @@ export async function connectToBluetooth() {
                 };
             });
 
+        if (!device) {
+            throw new Error("No device found");
+        }
+
         server = await device.gatt
             .connect()
-            .then(console.log("Server connected!")) // FOR DEBUG
+            .then((server) => {
+                console.log("Server connected!"); // FOR DEBUG
+                return server;
+            })
             .catch((error) => {
-                return {
-                    characteristic: null,
-                    message: "Failed to connect to server: " + error.message,
-                };
+                throw new Error(
+                    "Failed to connect to server: " + error.message
+                );
             });
+
         console.log(
-            // FOR DEBUG
-            "Server connect! " +
+            "Server connected! " +
                 server.connected +
                 ", device name: " +
                 device.name
-        );
+        ); // FOR DEBUG
 
-        console.log("Server connected gatt: " + device.name);
-        service = await server.getPrimaryService("0x181A").catch((error) => {
-            return {
-                characteristic: null,
-                message: "Failed to get primary service: " + error.message,
-            };
-        });
+        service = await server
+            .getPrimaryService("0000181a-0000-1000-8000-00805f9b34fb")
+            .catch((error) => {
+                throw new Error(
+                    "Failed to get primary service: " + error.message
+                );
+            });
 
         characteristic = await service
-            .getCharacteristic("0x2A58")
-            .then(console.log("Characteristic found!")) // FOR DEBUG
+            .getCharacteristic("00002a58-0000-1000-8000-00805f9b34fb")
+            .then((characteristic) => {
+                console.log("Characteristic found!"); // FOR DEBUG
+                return characteristic;
+            })
             .catch((error) => {
-                return {
-                    characteristic: null,
-                    message: "Failed to get characteristic: " + error.message,
-                };
+                throw new Error(
+                    "Failed to get characteristic: " + error.message
+                );
             });
-    } catch (error) {
-        return {
-            characteristic: null,
-            message: "Failed to initialize Bluetooth: " + error.message,
-        };
-    }
 
-    try {
         await characteristic.startNotifications().catch((error) => {
-            return {
-                characteristic: null,
-                message: "Failed to start notifications: " + error.message,
-            };
+            throw new Error("Failed to start notifications: " + error.message);
         });
+
         characteristic.addEventListener(
             "characteristicvaluechanged",
             (event) => {
@@ -85,20 +78,13 @@ export async function connectToBluetooth() {
                 playAudio(audioBuffer);
             }
         );
+
+        return { characteristic, message: "Bluetooth connected successfully" };
     } catch (error) {
+        console.log(error.message); // FOR DEBUG
         return {
             characteristic: null,
-            message: "Failed to start notifications: " + error.message,
+            message: "Failed to initialize Bluetooth: " + error.message,
         };
     }
-
-    return { characteristic, message: "Bluetooth connected successfully" };
-}
-
-async function handleCharacteristicValueChanged(event) {
-    const value = event.target.value;
-    // convert the value to an ArrayBuffer
-    const audioData = new Uint8Array(value.buffer);
-    // sends to page.tsx through playAudio
-    await playAudio(audioData);
 }

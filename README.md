@@ -1,6 +1,6 @@
 # Crime Locator
 
-This app provides GPS locations for local crime/police activity. It uses a Raspberry Pi Zero and a handheld ham radio.
+This app provides GPS locations for local crime/police activity. It uses an ESP32 microcontroller and a handheld ham radio for monitoring and the web app displays corodinates.
 
 # Requirements
 
@@ -21,11 +21,12 @@ This app provides GPS locations for local crime/police activity. It uses a Raspb
 
 -   HuggingFace AI models
 -   Vite React web app
+-   ESP32 Drivers
 
 ## ToDo
 
 -   [ ] containerize server code for cloud deployment
--   [ ] web or android app? pls say web :)
+-   [x] create web app as bridge to mcu
 
 ### Python virtual environment
 

@@ -34,13 +34,26 @@ export default function Home() {
         }
     };
 
+    const handleReconnectClick = async () => {
+        // Create a button element to fulfill the user gesture requirement
+        const button = document.createElement("button");
+        button.textContent = "Reconnect to Bluetooth";
+        button.style.display = "none"; // Hide the button from view
+
+        // Add an event listener to the button
+        button.addEventListener("click", async () => {
+            document.body.removeChild(button); // Remove the button after click
+            await handleBluetoothConnection(); // Call the Bluetooth connection function
+        });
+
+        // Append the button to the document body and simulate a click
+        document.body.appendChild(button);
+        button.click();
+    };
+
     useEffect(() => {
         handleBluetoothConnection();
     }, []);
-
-    const handleReconnectClick = async () => {
-        handleBluetoothConnection();
-    };
 
     return (
         <div className="m-5 md:m-20">

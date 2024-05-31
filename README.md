@@ -19,9 +19,9 @@ This app provides GPS locations for local crime/police activity. It uses an ESP3
 
 # Software
 
--   HuggingFace AI models
--   Vite React web app
--   ESP32 Drivers
+-   Audio processing server
+-   Next.js web app
+-   ESP32 drivers
 
 ## ToDo
 

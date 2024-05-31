@@ -66,7 +66,7 @@ export default function Home() {
                     <p className="my-5 text-lg text-red-600">Error: {error}</p>
                 )}
                 <Button onClick={handleReconnectClick} className="my-5">
-                    Reconnect
+                    Connect
                 </Button>
             </div>
         </div>

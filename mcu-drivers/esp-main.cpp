@@ -10,7 +10,7 @@
 
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
-const int readInterval = 20; // interval to read and send audio signal
+const int readInterval = 20;
 
 class MyServerCallbacks: public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
@@ -31,7 +31,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  // nitialize BLE
+  // ble init
   BLEDevice::init("ESP32Audio");
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -49,15 +49,13 @@ void setup() {
 
   pService->start();
 
-  delay(500); // FOR DEBUG, allows server to start before advertising
+  // delay(500); // FOR DEBUG, allows server to start before advertising
 
-  // start advertising
   pServer->getAdvertising()->start();
 }
 
 void loop() {
   if (deviceConnected) {
-    // read audio signal
     int audioSignal = adc1_get_raw(ADC1_CHANNEL_6);
 
     // convert audio to byte array
@@ -69,10 +67,11 @@ void loop() {
     pCharacteristic->setValue(audioData, 2);
     pCharacteristic->notify();
 
-    // blink led audio indicator
     digitalWrite(MY_BLUE_LED_PIN, !digitalRead(MY_BLUE_LED_PIN));
     delay(readInterval);
     
-    Serial.println("byte sent"); // FOR DEBUG
+    // Serial.println("byte sent"); // FOR DEBUG
+    Serial.println("Audio signal: " + String(audioSignal))
+    Serial.println("Audio data: " + String(audioData[0]) + String(audioData[1]));
   }
 }

@@ -51,10 +51,6 @@ export default function Home() {
         button.click();
     };
 
-    useEffect(() => {
-        handleBluetoothConnection();
-    }, []);
-
     return (
         <div className="m-5 md:m-20">
             <div>

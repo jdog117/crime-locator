@@ -71,7 +71,7 @@ void loop() {
     delay(readInterval);
     
     // Serial.println("byte sent"); // FOR DEBUG
-    Serial.println("Audio signal: " + String(audioSignal))
+    Serial.println("Audio signal: " + String(audioSignal));
     Serial.println("Audio data: " + String(audioData[0]) + String(audioData[1]));
   }
 }

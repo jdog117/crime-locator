@@ -75,6 +75,7 @@ export async function connectToBluetooth() {
             "characteristicvaluechanged",
             (event) => {
                 const audioBuffer = event.target.value;
+                console.log(audioBuffer); // FOR DEBUG
                 playAudio(audioBuffer);
             }
         );

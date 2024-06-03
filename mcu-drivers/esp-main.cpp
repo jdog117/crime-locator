@@ -6,11 +6,10 @@
 #include <BLE2902.h>
 
 #define MY_BLUE_LED_PIN 2
-#define AUDIO_INPUT_PIN 34  // ADC1 channel 6
+const int readInterval = 20;
 
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
-const int readInterval = 20;
 
 class MyServerCallbacks: public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
@@ -28,6 +27,8 @@ void setup() {
   pinMode(MY_BLUE_LED_PIN, OUTPUT);
   adc1_config_width(ADC_WIDTH_BIT_12);
   adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
+
+  // adc2_config_channel_atten(ADC2_CHANNEL_8, ADC_ATTEN_DB_11); // coming soon
 
   Serial.begin(9600);
 
@@ -49,19 +50,18 @@ void setup() {
 
   pService->start();
 
-  // delay(500); // FOR DEBUG, allows server to start before advertising
-
   pServer->getAdvertising()->start();
 }
 
 void loop() {
   if (deviceConnected) {
-    int audioSignal = adc1_get_raw(ADC1_CHANNEL_6);
+    int audioSample = adc1_get_raw(ADC1_CHANNEL_6);
+    // int audioSample = adc2_get_raw(ADC2_CHANNEL_8, ); // pin 25. use ADC1 for wifi tx // coming soon
 
     // convert audio to byte array
     uint8_t audioData[2];
-    audioData[0] = audioSignal & 0xFF;
-    audioData[1] = (audioSignal >> 8) & 0xFF;
+    audioData[0] = audioSample & 0xFF;
+    audioData[1] = (audioSample >> 8) & 0xFF;
 
     // send audio over BLE
     pCharacteristic->setValue(audioData, 2);
@@ -70,8 +70,7 @@ void loop() {
     digitalWrite(MY_BLUE_LED_PIN, !digitalRead(MY_BLUE_LED_PIN));
     delay(readInterval);
     
-    // Serial.println("byte sent"); // FOR DEBUG
-    Serial.println("Audio signal: " + String(audioSignal));
-    Serial.println("Audio data: " + String(audioData[0]) + String(audioData[1]));
+    Serial.println(String(audioSample));
+    // Serial.println("Audio data: " + String(audioData[0]) + String(audioData[1]));
   }
 }

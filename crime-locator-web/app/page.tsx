@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
     const [isReceivingAudio, setIsReceivingAudio] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [toggle, setToggle] = useState(false);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setToggle((prevIsOn) => !prevIsOn);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleBluetoothConnection = async () => {
         setIsReceivingAudio(false);
@@ -57,11 +65,21 @@ export default function Home() {
                 <h1 className="my-20 text-2xl font-bold">
                     Crime Locator Web App
                 </h1>
-                <p className="mt-20 text-xl">
-                    {isReceivingAudio
-                        ? "Receiving audio!"
-                        : "Connecting to ESP32 via Bluetooth..."}
-                </p>
+                <div className="flex-row flex items-end">
+                    <p className="mt-20 text-xl">
+                        {isReceivingAudio
+                            ? "Receiving audio!"
+                            : "Connecting to ESP32 via Bluetooth..."}
+                    </p>
+                    {toggle && isReceivingAudio && (
+                        <svg
+                            className="text-green-600 h-5 w-5 ml-4 mb-1"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle fill="currentColor" cx="12" cy="12" r="9" />
+                        </svg>
+                    )}
+                </div>
                 {error && (
                     <p className="my-5 text-lg text-red-600">Error: {error}</p>
                 )}
